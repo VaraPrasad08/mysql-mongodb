@@ -1,0 +1,258 @@
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-daterangepicker/2.1.13/daterangepicker.min.css" />
+
+    <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.20/angular.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.3.20/angular-messages.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.6/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-daterangepicker/2.1.13/daterangepicker.min.js"></script>
+
+<style>
+	@media print {
+ .d-print-none {
+  display: none!important;
+ }
+}
+</style>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+<script src="angular/angular.min.js" type="text/javascript"></script>
+<script src="angular/ngStorage.js"></script>
+<script>
+var app= angular.module("regapp",[]);
+app.controller('institutewise_gst_report', function($scope, $http,$filter,$window ) {
+
+ //Date range picker
+ $('#reservation').daterangepicker();
+ //Date range picker with time picker
+ $('#reservationtime').daterangepicker({timePicker: true, timePickerIncrement: 30, format: 'MM/DD/YYYY h:mm A'});
+ //Date range as a button
+ $('#daterange-btn').daterangepicker(
+         {
+             ranges: {
+                 'Today': [moment(), moment()],
+                 'Yesterday': [moment().subtract('days', 1), moment().subtract('days', 1)],
+                 'Last 7 Days': [moment().subtract('days', 6), moment()],
+                 'Last 30 Days': [moment().subtract('days', 29), moment()],
+                 'This Month': [moment().startOf('month'), moment().endOf('month')],
+                 'Last Month': [moment().subtract('month', 1).startOf('month'), moment().subtract('month', 1).endOf('month')]
+             },
+             startDate: moment().subtract('days', 29),
+             endDate: moment()
+         },
+ function(start, end) {
+     $('#reportrange span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
+ }
+ );
+
+var currentdt = new Date();
+if(currentdt.getMonth()<10){ var currentmonth = currentdt.getMonth()+1;  currentmonth='0'+currentmonth;  }else{  var currentmonth = currentdt.getMonth()+1; }
+ var currentdtes = (currentmonth)+'/'+currentdt.getDate()+'/'+currentdt.getFullYear();
+$scope.CurrentDateTime = currentdtes+' - '+currentdtes;
+$scope.userdate=$scope.CurrentDateTime
+$http.get('http://10.70.3.39:3006/api/master/institute?id=3,4').success(function(data) {		
+console.log(data);
+$scope.campuslist = data;
+
+});
+
+ $scope.getcashier_id = function(getid){
+   $scope.oneschool = $scope.campuslist.filter(e=>e.id==getid);
+var rpdt = document.getElementById('daterange-btn').value;
+$scope.displaydate = rpdt;
+var reportdate = rpdt.split("-");
+
+var frdt = (reportdate[0].replace(/\s+/g, "")).split('/');
+$scope.fromdt = frdt[2]+'-'+frdt[0]+'-'+frdt[1];
+
+var todt = (reportdate[1].replace(/\s+/g, "")).split('/');
+$scope.enddt = todt[2]+'-'+todt[0]+'-'+todt[1];
+
+var obj= {
+ "fromdate":$scope.fromdt,
+ "todate":$scope.enddt,
+ "inst":getid
+}
+console.log(obj);
+
+     $http.post('http://10.70.3.39:3006/api/finance/gstdayreport', obj).success((data) => {
+         console.log(data);
+         $scope.getdetails=data;
+         $scope.stdlist=$scope.getdetails.filter(e => e.inst_id == getid);
+
+         var instids=$filter('unique')($scope.stdlist,'inst_id');
+         console.log($scope.stdlist.gst_paid)
+         var Gstshow=[]; var totalshow=[];
+         for(var i=0;i<instids.length;i++)
+         {
+           console.log('Welcome');
+           var feestdlist = data.filter(e => e.inst_id == instids[i]);	
+           Gstshow[i]=feestdlist.gst_paid;
+           console.log(Gstshow[i]);
+         }
+        $scope.cancelledstdlist=data.filter(e => e.cancelled == 1);
+        //console.log($scope.cancelledstdlist);
+        $scope.CancelledGrandTotal=getSumElements($scope.cancelledstdlist,'paidamount')
+        $scope.CancelledFnTotal=getSumElements($scope.cancelledstdlist,'finepaid')
+        $scope.CancelledGstTotal=getSumElements($scope.cancelledstdlist,'gstpaid')
+        $scope.paid=0;
+
+var feepaytype=$filter('unique')($scope.stdlist,'feepaytype');
+var obj = {};
+                 $scope.amounttotal=0;$scope.gsttotal=0;$scope.finetotal=0;$scope.grandtotal=0;
+for(var i=0;i<feepaytype.length;i++)
+{
+  var total=0; var feetypename='';
+  var typewiseincome = $scope.stdlist.filter(e => e.feepaytype == feepaytype[i]);		
+  //console.log(typewiseincome);
+  for(var j=0;j<typewiseincome.length;j++){
+    total += typewiseincome[j].paidamount+typewiseincome[j].gstpaid+typewiseincome[j].finepaid;
+    feetypename = typewiseincome[j].feepaytype;
+    
+    
+     $scope.amounttotal=$scope.amounttotal+typewiseincome[j].paidamount;
+        $scope.gsttotal=$scope.gsttotal+typewiseincome[j].gstpaid;
+       $scope.finetotal=$scope.finetotal+typewiseincome[j].finepaid;
+                       
+  }
+                      
+  $scope.grandtotal=$scope.grandtotal+total;
+  
+    obj[i] = {
+    "feetypename" : feetypename,
+    "collected" : total
+        }
+                                 
+}
+                  
+           $scope.feetypeincome = obj;
+
+
+
+
+var campuswise=$filter('unique')($scope.stdlist,'campus_name');
+
+   var obj2 = {};
+                    $scope.campusgrandtotal=0;
+   for(var i=0;i<campuswise.length;i++)
+   {
+     var total=0; var campusname='';
+     var campuswiseincome = data.filter(e => e.campus_name == campuswise[i] && e.cancelled==0);		
+     //console.log(typewiseincome);
+     for(var j=0;j<campuswiseincome.length;j++){
+       total += campuswiseincome[j].paidamount+campuswiseincome[j].gstpaid+campuswiseincome[j].finepaid;
+       campusname = campuswiseincome[j].campus_name;
+     }
+                         
+     var canceltotal=0;
+     var cancelcampuswiseincome = data.filter(e => e.campus_name == campuswise[i] && e.cancelled==1);	
+     //console.log(cancelcampuswiseincome);
+     for(var k=0;k<cancelcampuswiseincome.length;k++){
+       canceltotal += cancelcampuswiseincome[k].paidamount+cancelcampuswiseincome[k].gstpaid+cancelcampuswiseincome[k].finepaid;
+     }
+     
+     
+     $scope.cancelcampusgrandtotal=$scope.cancelcampusgrandtotal+canceltotal;
+     
+       obj2[i] = {
+       "campus" : campusname,
+       "collected" : total,
+       "cancelcollected" : canceltotal
+           }
+                                    
+   }
+                     
+              $scope.campuswiseincome = obj2;
+              //console.log($scope.campuswiseincome)
+              $scope.Totalcollected=getSumElements($scope.campuswiseincome,'collected')
+              $scope.TotalCancelledCollected=getSumElements($scope.campuswiseincome,'cancelcollected')
+     })
+      
+ }
+
+ function getSumElements(obj, field) {
+   //console.log(obj);
+   var total = 0;
+   for (var i in obj)
+       total += Number(obj[i][field]);
+   return total;
+}
+
+});
+</script>
+<div ng-app="regapp" ng-controller="institutewise_gst_report">	
+
+			<section class="content" id="datatable" >
+				
+				<div class="box box-primary">
+					<div class="box-header">
+						<div class="col-sm-9 col-md-6">
+							  <h3 class="box-title" style="padding-left:0 ;"><strong>GST Report<br /></strong></h3>
+						</div>
+						<div class="col-md-6 text-right" style="margin-top:2px">	
+						</div>
+					</div>
+					<div class="box-body">
+						<div class="row">
+						<div class="col-md-5 form-group d-print-none">			
+			  	
+								<select ng-model="cashier_id" id="cashier_id" class="form-control col-md-6" ng-init="cashier_id='0'" ng-change="getcashier_id(cashier_id,CurrentDateTime);">
+									 <option value="0" selected="selected">Select Campus</option>
+										<option value="{{x.id}}" ng-repeat="x in campuslist | orderBy:'inst_id'">{{x.short_code}} - {{x.institute_name}}</option>
+								</select>         
+						</div>
+							<!-- Date -->
+
+							<div class="col-md-3 d-print-none">	
+								<div class="form-group">
+									<div class="input-group">
+                                            <div class="input-group-addon">
+                                                <i class="fa fa-calendar"></i>
+                                            </div>
+ 											<input type="text" class="form-control" id="daterange-btn" ng-model="CurrentDateTime" data-ajax="false"  value=""   />
+                                    </div>
+								</div> 
+							 </div>
+							 <div class="col-md-3 text-left form-group input-group">
+								<button class="btn btn-primary d-print-none" ng-click="getcashier_id(cashier_id,CurrentDateTime);" style="cursor: pointer;margin-left:15px; margin-bottom:15px">Submit</button>
+									&nbsp;&nbsp;&nbsp;&nbsp;
+									<a href="#" onClick="window.print()"><i class="fa fa-print fa-2x text-right d-print-none"></i></a> &nbsp;
+									<a download="report.xls" href="#" onClick=" ExcellentExport.excel(this, 'datatable', 'Sheet Name Here');"> <i class="fa fa-file-excel-o fa-2x text-right d-print-none"></i></a>
+
+							 </div>&nbsp;
+								<!-- Tution Fees -->
+								<div class="col-md-12 form-group" style="margin-top:5px;">
+								
+									<div class="table-responsive">  
+										<table class="table table-bordered" style="width:100%; line-height:20px;" border="1" cellpadding="2" cellspacing="0">         
+												 <thead>
+												 <tr class="info">
+												   <td colspan="12" style="font-size:14px; font-weight:600; text-align:center; line-height:25px;">{{campuslist.short_code}}</td>
+												 </tr>
+												   <tr class="info">
+													  <th>#</th>
+													   <th>College Name</th>
+													   <th> City </th>
+													  <th>Amount</th>
+														 <th>GST</th>
+														 <th> Total </th>
+													</tr>
+												</thead>	
+												<tbody ng-repeat="user in getdetails"> 
+													<tr>
+													  <td>{{$index+1}} </td>
+														<td>{{user.school_name}} - ({{user.short_code}}) </td>
+														<td>{{user.report_city}}</td>
+														<td> {{user.amount_paid}}</td>
+													   <td> {{user.gst_paid}}</td>
+													   <td> {{user.amount_paid+(1*user.gst_paid)}} </td>
+													</tr>
+												</tbody>
+										</table> 
+									</div>
+								</div>	
+						</div>
+					</div>
+				</div>
+			</section>
+</div>

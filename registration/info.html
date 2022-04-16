@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://maxcbootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <!-- Angular JS Script -->
+
+
+<style>
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  background-color: rgb(255, 255, 255);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* Add padding to containers */
+.container {
+  padding: 16px;
+  background-color: rgb(255, 255, 255);
+}
+
+/* Full-width input fields */
+input[type=text], input[type=password] {
+  width: 100%;
+  padding: 15px;
+  margin: 5px 0 22px 0;
+  display: inline-block;
+  border: none;
+  background: #f1f1f1;
+}
+
+input[type=text]:focus, input[type=password]:focus {
+  background-color: #ddd;
+  outline: none;
+}
+
+/* Overwrite default styles of hr */
+hr {
+  border: 1px solid #f1f1f1;
+  margin-bottom: 25px;
+}
+
+/* Set a style for the submit button */
+.registerbtn {
+  background-color: #04AA6D;
+  color: white;
+  padding: 16px 20px;
+  margin: 8px 0;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  opacity: 0.9;
+}
+
+.submitbtn:hover {
+  opacity: 1;
+}
+
+/* Add a blue text color to links */
+a {
+  color: dodgerblue;
+}
+
+/* Set a grey background color and center the text of the "sign in" section */
+.signin {
+  background-color: #f1f1f1;
+  text-align: center;
+}
+.col-25 {
+  float: left;
+  width: 25%;
+  margin-top: 6px;
+}
+
+.col-75 {
+  float: left;
+  width: 75%;
+  margin-top: 6px;
+}
+
+</style>
+<!-- Angular Script -->
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+<script src="angular/angular.min.js" type="text/javascript"></script>
+<script src="angular/ngStorage.js"></script>
+<script type="text/javascript"> 
+
+  var app= angular.module("regapp",['ngStorage']);
+
+  app.controller('myctrl', function($scope,$http) {                                                                                                                                                                                                                                                                                                                         
+
+  $scope.insertData= function(obj){
+
+    //console.log(obj);
+
+    var reginfo =
+    {
+    //   "Roll_number": obj.roll,
+    //  "Name":obj.name,
+    //   "Email_address": obj.email,                                                                                                                                                              
+    //   "Mobile_number": obj.number,
+    //    "Address": obj.address,
+    //   "State": obj.state,
+    //   "Country": obj.country,
+
+      "Roll_number": obj.roll,
+      "Name": obj.name,
+      "Email_addess": obj.email,
+      "Mobile_number": obj.number,
+      "Address":  obj.address,
+      "State": obj.state,
+      "Country": obj.country,
+      "Zip": obj.zip
+}
+    
+    console.log(reginfo);
+
+      $http.post('http://localhost:8000/registration', reginfo).then(function (data) {    
+      console.log(data); 
+    });
+    
+  }
+});
+  
+</script>
+
+</head>
+<body ng-app="regapp" ng-controller="myctrl">
+  
+  <div class="main-block"><br>
+    <center><img src="img.png" width="100px" height="100px"></center>
+    <div class="container">
+        <h1><center>Registration Form Template</center></h1>
+        <form method="post" class="bg-dark" ng-submit="insertData(x)"> 
+          <div class="row">
+          <div class="class-form">
+            <label for="rno" class="form-label">Roll number</label><br>
+            <input type="text"  class="form-control"  id="rno" placeholder="enter roll number" ng-model="x.roll"> 
+          </div>
+          <div class="class-form">
+            <label for="name" class="form-label">Name</label><br>
+            <input type="text"  class="form-control"  id="name" placeholder="enter name" ng-model="x.name"> 
+          </div>
+        <div class="class-form">
+          <label for="exampleInputEmail1" class="form-label">Email address</label><br>
+          <input type="text" class="form-control" id="Email address" placeholder="enter email" ng-model="x.email">
+          <div class="form-text">We'll never share your email with anyone else.</div><br>
+        </div>
+        <div class="class-form">
+          <label for="exampleInputEmail1" class="form-label">Address</label><br>
+          <input type="text" class="form-control" id="Email address" placeholder="enter Address" ng-model="x.address">
+          <!-- <small class="form-text text-muted">Street Address Line 2 </small> -->
+        </div>
+               <div class="class-from">
+                <label for="number" class="form-label">Mobile number</label><br>
+                <input type="text" class="form-control" id="mobile"  placeholder="enter mobile number" ng-model="x.number">
+              </div>
+              
+                <div class="col-5">
+                  <label for="country" class="form-label">Country</label>
+                <select id="country" name="country" ng-model="x.country">
+                  <option value="india">India</option>
+                  <option value="canada">Canada</option>
+                  <option value="usa">USA</option>
+                </select> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <label class="form-label">State</label>
+                <select id="state" name="state" ng-model="x.state"><br>
+                  <option value="AP">Andhra Pradesh</option>
+                  <option value="telangana">Telangana</option>
+                  <option value="tamil nadu">tamil Nadu</option>
+                </select> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <label class="form-label">Zip</label> 
+                <input type="number"placeholder="Enter Zip" ng-model="x.zip">
+              </div>
+              </div>
+        <br>
+        <div class="mb-3">
+                
+          <button type="submit" class="btn btn-primary btn-block" >SUBMIT</button>
+        </div>
+      </form>
+        <!-- <div class="row">
+          
+          <div class="col-sm>
+            <label for="country" class="form-label">Country</label><br>
+          
+          </div>
+          <div class="col-75">
+            <select id="country" name="country">
+              <option value="india">India</option>
+              <option value="canada">Canada</option>
+              <option value="usa">USA</option>
+            </select>
+          </div>
+           
+              <div class="mb-3"><br>
+                <label for="state" class="form-label">State</label><br>
+                </div>
+              <div class="col-75">
+                <select id="state" name="state"><br>
+                  <option value="AP">Andhra Pradesh</option>
+                  <option value="telangana">Telangana</option>
+                  <option value="tamil nadu">tamil Nadu</option>
+                </select>
+              
+              <div class="mb-3"><br>
+              <label for="zip" class="form-label">zip</label><br>
+              <input type="text" class="form-control" id="zip" placeholder=" ">
+              </div>
+            </div>
+            </div>
+          </form>
+            <div class="mb-3">
+                
+              <button type="submit" class="registerbtn">SUBMIT</button>
+            </div>
+            
+        </form> -->
+            </div>
+        </div>
+        </body>
+
+</html>

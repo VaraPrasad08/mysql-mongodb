@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<script src="angular/angular.min.js"></script>
+<script src="angular/ngStorage.js"></script>
+    
+<script type="text/javascript"> 
+    var app = angular.module('myApp', []);
+    app.controller('myCtrl', function($scope, $http) {
+        console.log('working');
+      $http.get("http://127.0.0.1:8000/registration").then(function(response) {
+        $scope.report = response.data.data;
+       // console.log(JSON.parse(response.data.data));
+      });
+    });
+    </script>
+    
+<body ng-app="myApp" ng-controller="myCtrl">
+
+<div >
+
+<center> <h1>REPORT</h1> </center>
+<!-- 
+<h1>{{myWelcome}}</h1> -->
+<div class="table-responsive">
+  <div class="container">
+    <table class="table table-bordered" id="example" class="dispaly">
+      <thead style="background-color: #888b8d">
+        <tr>
+          <th scope="col">Roll_number</th>
+          <th scope="col">Name</th>
+          <th scope="col">Email_address</th>
+          <th scope="col">Address</th>
+          <th scope="col">Mobile_number</th>
+          <th scope="col">Country</th>
+          <th scope="col">State</th>
+          <th scope="col">Zip</th>
+        </tr>
+      </thead>
+      <tbody>{{report}}
+        <tr ng-repeat="user in report">
+          <td scope="row">{{user.roll}}</td>
+          <td>{{user.name}}</td>
+          <td>{{user.email}}</td>
+          <td>{{user.number}}</td>
+          <td>{{user.address}}</td>
+          <td>{{user.state}}</td>
+          <td>{{user.country}}</td>
+          <td>{{user.zip}}</td>
+        </tr>
+      </tbody>
+</table>
+
+</div>
+</div>
+</div>
+
+
+</body>
+</html>

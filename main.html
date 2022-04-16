@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js"></script>
+
+  <style>
+    body {
+      font-family: Helvetica, Arial, sans-serif;
+      background-color: rgb(255, 255, 255);
+    }
+    
+    * {
+      box-sizing: border-box;
+    }
+    
+    /* Add padding to containers */
+    .container {
+      padding: 20px;
+      background-color: rgb(255, 255, 255);
+    }
+    
+    /* Full-width input fields */
+    input[type=text], input[type=password] {
+      width: 100%;
+      padding: 20px;
+      margin: 3px 0 20px 0;
+      display: inline-block;
+      border: none;
+      background: #faf9f9;
+    }
+    
+    input[type=text]:focus, input[type=password]:focus {
+      background-color: #ddd;
+      outline: none;
+    }
+    
+    /* Overwrite default styles of hr */
+    hr {
+      border: 1px solid #fffcfc;
+      margin-bottom: 25px;
+    }
+    
+    /* Set a style for the submit button */
+    .registerbtn {
+      background-color: #04AA6D;
+      color: white;
+      padding: 16px 20px;
+      margin: 8px 0;
+      border: none;
+      cursor: pointer;
+      width: 100%;
+      opacity: 0.9;
+    }
+    
+    .submitbtn:hover {
+      opacity: 1;
+    }
+    
+    /* Add a blue text color to links */
+    a {
+      color: rgb(255, 255, 255);
+    }
+    
+    /* Set a grey background color and center the text of the "sign in" section */
+    .signin {
+      background-color: #f7f2f2;
+      text-align: center;
+    }
+    .col-25 {
+      float: left;
+      width: 25%;
+      margin-top: 6px;
+    }
+    
+    .col-75 {
+      float: left;
+      width: 75%;
+      margin-top: 6px;
+    }
+    
+  </style>
+
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+<script ></script>
+
+
+<script type="text/javascript">
+var app= angular.module("regapp",[]);
+app.controller('myctrl', function($scope,$http) {
+  $http.get("http://localhost:8000/registration").then(function (response){
+    $scope.report = response.data;
+    console.log(response.data)
+    });
+$scope.insertData= function(obj){
+  var reginfo =
+  {
+    "Roll_number": obj.roll,
+    "Name": obj.name,
+    "Mobile_number": obj.number,
+    "Address":  obj.address,
+    "Branch":obj.branch,
+    "State": obj.state,
+    "Country": obj.country
+    }
+    console.log(reginfo);
+    $http.post('http://localhost:8000/post', reginfo).then(function(data) {    
+    console.log(data);});
+    location.reload();
+    }
+})
+
+</script>
+
+
+  
+
+<body ng-app="regapp" ng-controller="myctrl" style="padding:20px">
+    <div class="main-block"><br>
+      <center><img src="img.png" width="100px" height="100px"></center>
+      <div class="container">
+        
+          <h1 style="color:rgba(255, 145, 0, 0.933)"><center>Registration Form Template</center></h1>
+          <form method="post" class="bg-light" ng-submit="insertData(x)"> 
+            <div class="row">
+              <div class="col-md-6">
+                <label for="rno" class="form-label">Roll number</label><br>
+              <input type="text"  class="form-control"  id="rno" placeholder="enter roll number" ng-model="x.roll" required>
+              </div>
+            <div class="col-md-6">
+              <label for="name" class="form-label">Name</label><br>
+              <input type="text"  class="form-control"  id="name" placeholder="enter name" ng-model="x.name"> 
+            </div>
+            <div class="col-md-6">
+              <label for="exampleInputEmail1" class="form-label">Address</label><br>
+              <input type="text" class="form-control" id="Email address" placeholder="enter Address" ng-model="x.address">
+              <!-- <small class="form-text text-muted">Street Address Line 2 </small> -->
+            </div>
+            <div class="col-md-6">
+              <label for="number" class="form-label">Mobile number</label><br>
+              <input type="text" class="form-control" id="mobile"  placeholder="enter mobile number" ng-model="x.number">
+            </div>
+          
+            <div class="col-md-6">
+                <div class="col-md-4">
+                  <label for="branch" class="form-label">Branch</label><br>
+                <select  id="Branch" name="Branch" ng-model="x.branch">
+                   <option value="ACE">ACE</option>
+                   <option value="ACET">ACET</option>
+                   <option value="ACKKD">ACKKD</option>
+               </select> 
+                </div>
+                <div class="col-md-4">
+                  <label  for="state" class="form-label">State</label>
+                  <select id="state" name="state" ng-model="x.state"><br>
+                    <option value="AP">Andhra Pradesh</option>
+                    <option value="telangana">Telangana</option>
+                    <option value="tamil nadu">tamil Nadu</option>
+                  </select>
+
+                </div>
+                <div class="col-md-4">
+                  <label for="country" class="form-label">Country</label><br>
+                  <select id="country" name="country" ng-model="x.country">
+                    <option value="india">India</option>
+                    <option value="canada">Canada</option>
+                    <option value="usa">USA</option>
+                  </select>
+                </div>
+          </div>
+                </div>
+                <br>
+          <div class="mb-3">
+            <button type="submit" class="btn btn-primary btn-block" >SUBMIT</button>
+          </div>
+          </form>
+  
+              </div>
+          </div>
+          <body ng-app="regapp" ng-controller="myCtrl">
+          <div class ="row">
+            <div class="container">
+              <h2><center>REPORT</center></h2>
+            </div>
+            
+          </div>
+          <div class="table-responsive">
+            <div class="container">
+            <table class="table table-bordered" id="example" class="dispaly" style="width:100%" >
+              <thead >
+                <thead style="background-color: #8a9094"></thead>
+                <tr>
+                  <th >Roll_number</th>
+                  <th >Name</th>
+                  <th >Address</th>
+                  <th >Mobile_number</th>
+                  <th >Branch</th>
+                  <th >State</th>
+                  <th >Country</th>
+                  
+                </tr>
+              </thead>
+              <tbody>
+                <tr ng-repeat="x in report;">
+                  <td><span>{{x.Roll_number}}</span></td>
+                  <td><span>{{x.Name}}</span></td>
+                  <td><span>{{x.Address}}</span></td>
+                  <td><span>{{x.Mobile_number}}</span></td>
+                  <td><span>{{x.Branch}}</span></td>
+                  <td><span>{{x.State}}</span></td>
+                  <td><span>{{x.Country}}</span></td>
+        
+                </tr>
+                </tbody>
+        </table>
+        </div>
+        </div>
+  </body>

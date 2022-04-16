@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://maxcbootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+<style>
+  body {
+    font-family: Helvetica, Arial, sans-serif;
+    background-color: rgb(253, 253, 253);
+  }
+  * {
+      box-sizing: border-box;
+    }
+    
+    /* Add padding to containers */
+    .container {
+      padding: 20px;
+      background-color: rgb(255, 255, 255);
+    }
+    
+    /* Full-width input fields */
+    input[type=text], input[type=password] {
+      width: 100%;
+      padding: 20px;
+      margin: 3px 0 20px 0;
+      display: inline-block;
+      border: none;
+      background: #faf9f9;
+    }
+    
+    input[type=text]:focus, input[type=password]:focus {
+      background-color: #ddd;
+      outline: none;
+    }
+    
+    /* Overwrite default styles of hr */
+    hr {
+      border: 1px solid #fffcfc;
+      margin-bottom: 25px;
+    }
+    
+    /* Set a style for the submit button */
+    .registerbtn {
+      background-color: #04AA6D;
+      color: white;
+      padding: 16px 20px;
+      margin: 8px 0;
+      border: none;
+      cursor: pointer;
+      width: 100%;
+      opacity: 0.9;
+    }
+    
+    .submitbtn:hover {
+      opacity: 1;
+    }
+    
+    /* Add a blue text color to links */
+    a {
+      color: rgb(255, 255, 255);
+    }
+    
+    /* Set a grey background color and center the text of the "sign in" section */
+    .signin {
+      background-color: #f7f2f2;
+      text-align: center;
+    }
+    .col-25 {
+      float: left;
+      width: 25%;
+      margin-top: 6px;
+    }
+    
+    .col-75 {
+      float: left;
+      width: 75%;
+      margin-top: 6px;
+    }
+</style>
+
+<script src="angular/ngStorage.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+<script src="angular/angular.min.js" type="text/javascript"></script> 
+
+<script type="text/javascript"> 
+var app = angular.module('regapp', []);
+
+app.controller('myCtrl', function ($scope, $http) {
+  $http.get("http://localhost:8000/students_list").then(function (response)      
+{
+  $scope.report = response.data;
+  console.log(response.data)
+
+}); 
+});
+  
+</script>
+
+
+<body ng-app="regapp" ng-controller="myCtrl">
+  <center> <h1> REPORT </h1> </center>
+    <div class="table-responsive">
+    <div class="container">
+    <table class="table table-bordered" id="example" class="dispaly">
+      <thead >
+        <thead style="background-color: #8a9094"></thead>
+        <tr>
+          <th >Roll_number</th>
+          <th >Name</th>
+          <th >Address</th>
+          <th >Mobile_number</th>
+          <th >Branch</th>
+          <th >State</th>
+          <th >Country</th>
+          
+        </tr>
+      </thead>
+      <tbody>
+        <tr ng-repeat="x in report">
+          <td>{{x.Roll_number}}</td>
+          <td>{{x.Name}}</td>
+          <td>{{x.Address}}</td>
+          <td>{{x.Mobile_number}}</td>
+          <td>{{x.Branch}}</td>
+          <td>{{x.State}}</td>
+          <td>{{x.Country}}</td>
+
+        </tr>
+        </tbody>
+</table>
+</div>
+</div>
+
+
+</body>
+
